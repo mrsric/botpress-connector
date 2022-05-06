@@ -48,7 +48,7 @@ export class PostMessageSentHandler {
 
         let response: Array<IBotpressMessage> | null;
         try {
-            response = await sendMessage(this.app, this.read, this.http, rid, text);
+            response = await sendMessage(this.app, this.read, this.http, rid + ':' + token, text);
 
         } catch (error) {
             const serviceUnavailable: string = await getAppSettingValue(this.read, AppSetting.BotpressServiceUnavailableMessage);
