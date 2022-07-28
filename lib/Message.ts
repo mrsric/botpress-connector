@@ -17,7 +17,7 @@ export const createBotpressMessage = async (
     read: IRead,
     modify: IModify,
     botpressMessage: IBotpressMessage
-    ): Promise<any> => {
+): Promise<any> => {
     const { text, options } = botpressMessage.message as IBotpressQuickReplies;
 
     if (text && options) {
@@ -66,11 +66,11 @@ export const createBotpressMessage = async (
         await createMessage(app, rid, read, modify, { blocks: blockArray });
     } else {
         // botpressMessage is instanceof string
-        await createMessage(app, rid, read, modify, { text: botpressMessage.message as string });
+        await createMessage(app, rid, read, modify, { text: botpressMessage.message.text as string });
     }
 };
 
-export const createMessage = async (app: IApp, rid: string, read: IRead,  modify: IModify, message: IMessageParam ): Promise<any> => {
+export const createMessage = async (app: IApp, rid: string, read: IRead, modify: IModify, message: IMessageParam): Promise<any> => {
     if (!message) {
         return;
     }
@@ -91,29 +91,29 @@ export const createMessage = async (app: IApp, rid: string, read: IRead,  modify
     }
 
     const msg = modify.getCreator().startMessage().setRoom(room).setSender(sender);
-	const { text, blocks, attachment } = message;
+    const { text, blocks, attachment } = message;
 
     if (text) {
         msg.setText(text);
     }
 
     if (attachment) {
-		msg.addAttachment(attachment);
-	}
+        msg.addAttachment(attachment);
+    }
 
 
     if (blocks) {
-		msg.addBlocks(blocks);
+        msg.addBlocks(blocks);
     }
 
     return new Promise(async (resolve) => {
         modify.getCreator().finish(msg)
-        .then((result) => resolve(result))
-        .catch((error) => console.error(error));
+            .then((result) => resolve(result))
+            .catch((error) => console.error(error));
     });
 };
 
-export const createLivechatMessage = async (rid: string, read: IRead,  modify: IModify, message: any, visitor: IVisitor ): Promise<any> => {
+export const createLivechatMessage = async (rid: string, read: IRead, modify: IModify, message: any, visitor: IVisitor): Promise<any> => {
     if (!message) {
         return;
     }
@@ -125,7 +125,7 @@ export const createLivechatMessage = async (rid: string, read: IRead,  modify: I
 
     const room = await read.getRoomReader().getById(rid);
     if (!room) {
-        return new Error(`${ Logs.INVALID_ROOM_ID } ${ rid }`);
+        return new Error(`${Logs.INVALID_ROOM_ID} ${rid}`);
     }
 
     const msg = modify.getCreator().startLivechatMessage().setRoom(room).setVisitor(visitor);
@@ -142,31 +142,31 @@ export const createLivechatMessage = async (rid: string, read: IRead,  modify: I
 
     return new Promise(async (resolve) => {
         modify.getCreator().finish(msg)
-        .then((result) => resolve(result))
-        .catch((error) => console.error(error));
+            .then((result) => resolve(result))
+            .catch((error) => console.error(error));
     });
 };
 
 export const deleteAllActionBlocks = async (
-	modify: IModify,
-	appUser: IUser,
-	msgId: string,
+    modify: IModify,
+    appUser: IUser,
+    msgId: string,
 ): Promise<void> => {
-	const msgBuilder = await modify.getUpdater().message(msgId, appUser);
+    const msgBuilder = await modify.getUpdater().message(msgId, appUser);
 
-	const withoutActionBlocks: Array<IBlock> = msgBuilder
-		.getBlocks()
-		.filter(
-			(block) =>
-				!(
-					block.type === BlockType.ACTIONS &&
-					(block as IActionsBlock).elements.some(
-						(element) => element.type === BlockElementType.BUTTON,
-					)
-				),
-		);
+    const withoutActionBlocks: Array<IBlock> = msgBuilder
+        .getBlocks()
+        .filter(
+            (block) =>
+                !(
+                    block.type === BlockType.ACTIONS &&
+                    (block as IActionsBlock).elements.some(
+                        (element) => element.type === BlockElementType.BUTTON,
+                    )
+                ),
+        );
 
-	msgBuilder.setEditor(appUser).setBlocks(withoutActionBlocks);
-	return modify.getUpdater().finish(msgBuilder);
+    msgBuilder.setEditor(appUser).setBlocks(withoutActionBlocks);
+    return modify.getUpdater().finish(msgBuilder);
 };
 

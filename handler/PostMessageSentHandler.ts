@@ -59,6 +59,8 @@ export class PostMessageSentHandler {
             return;
         }
 
+        this.app.getLogger().info(`parsed response = ${JSON.stringify(response)}`);
+
         if (response) {
             for (const message of response) {
                 if (!(JSON.stringify(message) == '{}')) {
