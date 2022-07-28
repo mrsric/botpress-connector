@@ -5,7 +5,9 @@ export interface IBotpressMessage {
     sessionId: string;
 }
 
-export interface IBotpressQuickReplies {
+export interface IBotpressMessageProperty {
+    type: string;
+    imageUrl: string;
     text: string;
     options: Array<IBotpressQuickReplyOptions>;
 }
@@ -16,11 +18,11 @@ export interface IBotpressQuickReply {
 }
 
 export interface IBotpressQuickReplyOptions {
-	text: string;
-	actionId?: string;
-	buttonStyle?: ButtonStyle;
-	data?: {
-		[prop: string]: string;
-	};
+    text: string;
+    actionId?: string;
+    buttonStyle?: ButtonStyle;
+    data?: {
+        [prop: string]: string;
+    };
 }
 

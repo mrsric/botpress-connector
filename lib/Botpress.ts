@@ -2,7 +2,7 @@ import { IHttp, IHttpRequest, IRead } from '@rocket.chat/apps-engine/definition/
 import { AppSetting } from '../config/Settings';
 import { Headers } from '../enum/Http';
 import { Logs } from '../enum/Logs';
-import { IBotpressMessage, IBotpressQuickReplies, IBotpressQuickReply } from '../enum/Botpress';
+import { IBotpressMessage, IBotpressMessageProperty, IBotpressQuickReply } from '../enum/Botpress';
 import { createHttpRequest } from './Http';
 import { getAppSettingValue } from './Setting';
 import { performHandover } from './Room';

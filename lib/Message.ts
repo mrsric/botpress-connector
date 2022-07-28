@@ -4,12 +4,13 @@ import { BlockElementType, BlockType, IActionsBlock, IBlock, IButtonElement, Tex
 import { IUser } from '@rocket.chat/apps-engine/definition/users';
 import { AppSetting } from '../config/Settings';
 import { Logs } from '../enum/Logs';
-import { IBotpressMessage, IBotpressQuickReplies, IBotpressQuickReply, IBotpressQuickReplyOptions } from '../enum/Botpress';
+import { IBotpressMessage, IBotpressMessageProperty, IBotpressQuickReply, IBotpressQuickReplyOptions } from '../enum/Botpress';
 import { getAppSettingValue } from './Setting';
 import { uuid } from './Helper';
 import { ActionIds } from '../enum/ActionIds';
 import { IApp } from '@rocket.chat/apps-engine/definition/IApp';
 import { IMessageParam } from '../types/misc';
+import { IMessageAttachment } from '@rocket.chat/apps-engine/definition/messages';
 
 export const createBotpressMessage = async (
     app: IApp,
@@ -18,7 +19,14 @@ export const createBotpressMessage = async (
     modify: IModify,
     botpressMessage: IBotpressMessage
 ): Promise<any> => {
-    const { text, options } = botpressMessage.message as IBotpressQuickReplies;
+    const { text, options, imageUrl, type } = botpressMessage.message as IBotpressMessageProperty;
+
+    if (type == 'image') {
+        const imageAttachment = {
+            imageUrl: imageUrl,
+        } as IMessageAttachment;
+        await createMessage(app, rid, read, modify, { attachment: imageAttachment });
+    }
 
     if (text && options) {
         // botpressMessage is instanceof IBotpressQuickReplies
@@ -98,6 +106,7 @@ export const createMessage = async (app: IApp, rid: string, read: IRead, modify:
     }
 
     if (attachment) {
+        app.getLogger().info(`this is final Url of image = ${JSON.stringify(attachment.imageUrl)}`)
         msg.addAttachment(attachment);
     }
 
