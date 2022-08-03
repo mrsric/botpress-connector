@@ -67,6 +67,18 @@ export const parseSingleBotpressMessage = (app: IApp, message: any): IBotpressMe
         return textObject
     }
 
+    if (type == 'audio') {
+        const audioObject = {
+            message: {
+                type: 'audio',
+                audioUrl: message.audio,
+                title: message.title
+            },
+            sessionId: sessionId
+        } as IBotpressMessage;
+        return audioObject;
+    }
+
     if (type == 'image') {
         const imageObject = {
             message: {
@@ -77,6 +89,30 @@ export const parseSingleBotpressMessage = (app: IApp, message: any): IBotpressMe
             sessionId: sessionId
         } as IBotpressMessage;
         return imageObject;
+    }
+
+    if (type == 'video') {
+        const videoObject = {
+            message: {
+                type: 'video',
+                videoUrl: message.video,
+                title: message.title
+            },
+            sessionId: sessionId
+        } as IBotpressMessage;
+        return videoObject;
+    }
+
+    if (type == 'file') {
+        const fileObject = {
+            message: {
+                type: 'file',
+                fileUrl: message.file,
+                title: message.title
+            },
+            sessionId: sessionId
+        } as IBotpressMessage;
+        return fileObject;
     }
 
     if (choices && type == "single-choice") {

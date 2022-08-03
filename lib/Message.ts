@@ -19,13 +19,28 @@ export const createBotpressMessage = async (
     modify: IModify,
     botpressMessage: IBotpressMessage
 ): Promise<any> => {
-    const { text, options, imageUrl, type } = botpressMessage.message as IBotpressMessageProperty;
+    const { text, options, imageUrl, audioUrl, videoUrl, fileUrl, type } = botpressMessage.message as IBotpressMessageProperty;
 
     if (type == 'image') {
         const imageAttachment = {
             imageUrl: imageUrl,
         } as IMessageAttachment;
-        await createMessage(app, rid, read, modify, { attachment: imageAttachment });
+        await createMessage(app, rid, read, modify, { text: imageAttachment.imageUrl as string })
+        //await createMessage(app, rid, read, modify, { attachment: imageAttachment });
+    }
+
+    if (type == 'audio') {
+        const audioAttachment = {
+            audioUrl: audioUrl,
+        } as IMessageAttachment;
+        await createMessage(app, rid, read, modify, { text: audioAttachment.audioUrl as string })
+    }
+
+    if (type == 'video') {
+        const videoAttachment = {
+            videoUrl: videoUrl,
+        } as IMessageAttachment;
+        await createMessage(app, rid, read, modify, { text: videoAttachment.videoUrl as string })
     }
 
     if (text && options) {

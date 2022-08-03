@@ -7,9 +7,12 @@ export interface IBotpressMessage {
 
 export interface IBotpressMessageProperty {
     type: string;
-    imageUrl: string;
-    text: string;
-    options: Array<IBotpressQuickReplyOptions>;
+    imageUrl?: string;
+    audioUrl?: string;
+    fileUrl?: string;
+    videoUrl?: string;
+    text?: string;
+    options?: Array<IBotpressQuickReplyOptions>;
 }
 
 export interface IBotpressQuickReply {
