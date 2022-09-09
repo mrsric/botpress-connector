@@ -25,22 +25,21 @@ export const createBotpressMessage = async (
         const imageAttachment = {
             imageUrl: imageUrl,
         } as IMessageAttachment;
-        await createMessage(app, rid, read, modify, { text: imageAttachment.imageUrl as string })
-        //await createMessage(app, rid, read, modify, { attachment: imageAttachment });
+        await createMessage(app, rid, read, modify, { attachment: imageAttachment });
     }
 
     if (type == 'audio') {
         const audioAttachment = {
             audioUrl: audioUrl,
         } as IMessageAttachment;
-        await createMessage(app, rid, read, modify, { text: audioAttachment.audioUrl as string })
+        await createMessage(app, rid, read, modify, { attachment: audioAttachment });
     }
 
     if (type == 'video') {
         const videoAttachment = {
             videoUrl: videoUrl,
         } as IMessageAttachment;
-        await createMessage(app, rid, read, modify, { text: videoAttachment.videoUrl as string })
+        await createMessage(app, rid, read, modify, { attachment: videoAttachment });
     }
 
     if (text && options) {
