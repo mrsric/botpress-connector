@@ -47,12 +47,9 @@ export const parseBotpressResponse = (app: IApp, response: any): Array<IBotpress
 
 export const parseSingleBotpressMessage = (app: IApp, message: any): IBotpressMessage => {
 
-    app.getLogger().error(`response! ${JSON.stringify(message)}`);
 
     const { sessionId, text, choices, type } = message;
 
-
-    app.getLogger().error(`choices! ${JSON.stringify(choices)}`);
 
     let options: any = []
 

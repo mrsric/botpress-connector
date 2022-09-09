@@ -131,7 +131,6 @@ export const createMessage = async (app: IApp, rid: string, read: IRead, modify:
     }
 
     if (attachment) {
-        app.getLogger().info(`this is final Url of image = ${JSON.stringify(attachment.imageUrl)}`)
         msg.addAttachment(attachment);
     }
 
