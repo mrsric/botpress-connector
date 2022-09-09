@@ -11,6 +11,7 @@ export interface IBotpressMessageProperty {
     audioUrl?: string;
     fileUrl?: string;
     videoUrl?: string;
+    title?: string;
     text?: string;
     options?: Array<IBotpressQuickReplyOptions>;
 }
