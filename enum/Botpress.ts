@@ -5,9 +5,15 @@ export interface IBotpressMessage {
     sessionId: string;
 }
 
-export interface IBotpressQuickReplies {
-    text: string;
-    options: Array<IBotpressQuickReplyOptions>;
+export interface IBotpressMessageProperty {
+    type: string;
+    imageUrl?: string;
+    audioUrl?: string;
+    fileUrl?: string;
+    videoUrl?: string;
+    title?: string;
+    text?: string;
+    options?: Array<IBotpressQuickReplyOptions>;
 }
 
 export interface IBotpressQuickReply {
@@ -16,11 +22,11 @@ export interface IBotpressQuickReply {
 }
 
 export interface IBotpressQuickReplyOptions {
-	text: string;
-	actionId?: string;
-	buttonStyle?: ButtonStyle;
-	data?: {
-		[prop: string]: string;
-	};
+    text: string;
+    actionId?: string;
+    buttonStyle?: ButtonStyle;
+    data?: {
+        [prop: string]: string;
+    };
 }
 

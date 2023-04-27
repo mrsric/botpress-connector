@@ -11,11 +11,11 @@ import { getAppSettingValue } from '../lib/Setting';
 
 export class PostMessageSentHandler {
     constructor(private app: IApp,
-                private message: ILivechatMessage,
-                private read: IRead,
-                private http: IHttp,
-                private persis: IPersistence,
-                private modify: IModify) {}
+        private message: ILivechatMessage,
+        private read: IRead,
+        private http: IHttp,
+        private persis: IPersistence,
+        private modify: IModify) { }
 
     public async run() {
 
@@ -59,9 +59,12 @@ export class PostMessageSentHandler {
             return;
         }
 
+
         if (response) {
             for (const message of response) {
-                await createBotpressMessage(this.app, rid, this.read, this.modify, message);
+                if (!(JSON.stringify(message) == '{}')) {
+                    await createBotpressMessage(this.app, rid, this.read, this.modify, message);
+                }
             }
         }
     }

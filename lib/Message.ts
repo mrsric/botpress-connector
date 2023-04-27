@@ -4,12 +4,13 @@ import { BlockElementType, BlockType, IActionsBlock, IBlock, IButtonElement, Tex
 import { IUser } from '@rocket.chat/apps-engine/definition/users';
 import { AppSetting } from '../config/Settings';
 import { Logs } from '../enum/Logs';
-import { IBotpressMessage, IBotpressQuickReplies, IBotpressQuickReply, IBotpressQuickReplyOptions } from '../enum/Botpress';
+import { IBotpressMessage, IBotpressMessageProperty, IBotpressQuickReply, IBotpressQuickReplyOptions } from '../enum/Botpress';
 import { getAppSettingValue } from './Setting';
 import { uuid } from './Helper';
 import { ActionIds } from '../enum/ActionIds';
 import { IApp } from '@rocket.chat/apps-engine/definition/IApp';
 import { IMessageParam } from '../types/misc';
+import { IMessageAttachment } from '@rocket.chat/apps-engine/definition/messages';
 
 export const createBotpressMessage = async (
     app: IApp,
@@ -17,8 +18,40 @@ export const createBotpressMessage = async (
     read: IRead,
     modify: IModify,
     botpressMessage: IBotpressMessage
-    ): Promise<any> => {
-    const { text, options } = botpressMessage.message as IBotpressQuickReplies;
+): Promise<any> => {
+    const { text, options, title, imageUrl, audioUrl, videoUrl, fileUrl, type } = botpressMessage.message as IBotpressMessageProperty;
+
+    if (type == 'image') {
+        const imageAttachment = {
+            imageUrl: imageUrl,
+        } as IMessageAttachment;
+        await createMessage(app, rid, read, modify, { attachment: imageAttachment });
+    }
+
+    if (type == 'audio') {
+        const audioAttachment = {
+            audioUrl: audioUrl,
+        } as IMessageAttachment;
+        await createMessage(app, rid, read, modify, { attachment: audioAttachment });
+    }
+
+    if (type == 'video') {
+        const videoAttachment = {
+            videoUrl: videoUrl,
+        } as IMessageAttachment;
+        await createMessage(app, rid, read, modify, { attachment: videoAttachment });
+    }
+
+    if (type == 'file') {
+        const fileAttachment = {
+            title: {
+                displayDownloadLink: true,
+                link: fileUrl,
+                value: title,
+            }
+        } as IMessageAttachment;
+        await createMessage(app, rid, read, modify, { attachment: fileAttachment });
+    }
 
     if (text && options) {
         // botpressMessage is instanceof IBotpressQuickReplies
@@ -66,11 +99,11 @@ export const createBotpressMessage = async (
         await createMessage(app, rid, read, modify, { blocks: blockArray });
     } else {
         // botpressMessage is instanceof string
-        await createMessage(app, rid, read, modify, { text: botpressMessage.message as string });
+        await createMessage(app, rid, read, modify, { text: botpressMessage.message.text as string });
     }
 };
 
-export const createMessage = async (app: IApp, rid: string, read: IRead,  modify: IModify, message: IMessageParam ): Promise<any> => {
+export const createMessage = async (app: IApp, rid: string, read: IRead, modify: IModify, message: IMessageParam): Promise<any> => {
     if (!message) {
         return;
     }
@@ -91,29 +124,29 @@ export const createMessage = async (app: IApp, rid: string, read: IRead,  modify
     }
 
     const msg = modify.getCreator().startMessage().setRoom(room).setSender(sender);
-	const { text, blocks, attachment } = message;
+    const { text, blocks, attachment } = message;
 
     if (text) {
         msg.setText(text);
     }
 
     if (attachment) {
-		msg.addAttachment(attachment);
-	}
+        msg.addAttachment(attachment);
+    }
 
 
     if (blocks) {
-		msg.addBlocks(blocks);
+        msg.addBlocks(blocks);
     }
 
     return new Promise(async (resolve) => {
         modify.getCreator().finish(msg)
-        .then((result) => resolve(result))
-        .catch((error) => console.error(error));
+            .then((result) => resolve(result))
+            .catch((error) => console.error(error));
     });
 };
 
-export const createLivechatMessage = async (rid: string, read: IRead,  modify: IModify, message: any, visitor: IVisitor ): Promise<any> => {
+export const createLivechatMessage = async (rid: string, read: IRead, modify: IModify, message: any, visitor: IVisitor): Promise<any> => {
     if (!message) {
         return;
     }
@@ -125,7 +158,7 @@ export const createLivechatMessage = async (rid: string, read: IRead,  modify: I
 
     const room = await read.getRoomReader().getById(rid);
     if (!room) {
-        return new Error(`${ Logs.INVALID_ROOM_ID } ${ rid }`);
+        return new Error(`${Logs.INVALID_ROOM_ID} ${rid}`);
     }
 
     const msg = modify.getCreator().startLivechatMessage().setRoom(room).setVisitor(visitor);
@@ -142,31 +175,31 @@ export const createLivechatMessage = async (rid: string, read: IRead,  modify: I
 
     return new Promise(async (resolve) => {
         modify.getCreator().finish(msg)
-        .then((result) => resolve(result))
-        .catch((error) => console.error(error));
+            .then((result) => resolve(result))
+            .catch((error) => console.error(error));
     });
 };
 
 export const deleteAllActionBlocks = async (
-	modify: IModify,
-	appUser: IUser,
-	msgId: string,
+    modify: IModify,
+    appUser: IUser,
+    msgId: string,
 ): Promise<void> => {
-	const msgBuilder = await modify.getUpdater().message(msgId, appUser);
+    const msgBuilder = await modify.getUpdater().message(msgId, appUser);
 
-	const withoutActionBlocks: Array<IBlock> = msgBuilder
-		.getBlocks()
-		.filter(
-			(block) =>
-				!(
-					block.type === BlockType.ACTIONS &&
-					(block as IActionsBlock).elements.some(
-						(element) => element.type === BlockElementType.BUTTON,
-					)
-				),
-		);
+    const withoutActionBlocks: Array<IBlock> = msgBuilder
+        .getBlocks()
+        .filter(
+            (block) =>
+                !(
+                    block.type === BlockType.ACTIONS &&
+                    (block as IActionsBlock).elements.some(
+                        (element) => element.type === BlockElementType.BUTTON,
+                    )
+                ),
+        );
 
-	msgBuilder.setEditor(appUser).setBlocks(withoutActionBlocks);
-	return modify.getUpdater().finish(msgBuilder);
+    msgBuilder.setEditor(appUser).setBlocks(withoutActionBlocks);
+    return modify.getUpdater().finish(msgBuilder);
 };
 
